@@ -1,0 +1,29 @@
+---
+- name: BACKUP LAB CONFIGS
+  hosts: all
+  connection: local
+  gather_facts: no
+  vars_files:
+  - auth.yml
+  tasks:
+
+  - name: configure provider
+    set_fact:
+      provider:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        host: "{{ inventory_hostname }}"
+
+  - name: backup configs
+    ios_config:
+      provider: "{{ provider }}"
+      backup: yes
+    register: config
+
+  - name: debug var
+    debug:
+      var: config
+
+  - name: copy config
+    command: mv "{{ config['backup_path'] }}" "/home/bryan/mine/cfg-backup/backup/{{ inventory_hostname }}.cfg"
+ 
